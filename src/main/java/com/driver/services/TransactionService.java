@@ -1,5 +1,7 @@
 package com.driver.services;
 
+import com.driver.models.Book;
+import com.driver.models.Card;
 import com.driver.models.Transaction;
 import com.driver.models.TransactionStatus;
 import com.driver.repositories.BookRepository;
@@ -10,6 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.driver.models.CardStatus.DEACTIVATED;
+import static com.driver.models.TransactionStatus.FAILED;
+import static com.driver.models.TransactionStatus.SUCCESSFUL;
 
 @Service
 public class TransactionService {
@@ -33,6 +39,41 @@ public class TransactionService {
     public int fine_per_day;
 
     public String issueBook(int cardId, int bookId) throws Exception {
+
+        Book book=bookRepository5.findById(bookId).get();
+        Card card=cardRepository5.findById(cardId).get();
+        Transaction transaction=new Transaction();
+        transaction.setBook(book);
+        transaction.setCard(card);
+
+        if(book==null || book.isAvailable()==false){
+            transaction.setTransactionStatus(FAILED);
+            transactionRepository5.save(transaction);
+            throw new Exception("Book is either unavailable or not present");
+        }
+
+        if(card==null || card.getCardStatus().equals(DEACTIVATED)){
+            transaction.setTransactionStatus(FAILED);
+            transactionRepository5.save(transaction);
+            throw  new Exception("Card is invalid");
+        }
+
+        if(card.getBooks().size()>=max_allowed_books){
+            transaction.setTransactionStatus(FAILED);
+            transactionRepository5.save(transaction);
+            throw new Exception("Book limit has reached for this card");
+        }
+        book.setAvailable(false);
+        transaction.setTransactionStatus(SUCCESSFUL);
+        book.setCard(card);
+        List<Book>list=card.getBooks();
+        list.add(book);
+        card.setBooks(list);
+
+        transactionRepository5.save(transaction);
+        cardRepository5.save(card);
+        bookRepository5.save(book);
+
         //check whether bookId and cardId already exist
         //conditions required for successful transaction of issue book:
         //1. book is present and available
@@ -42,16 +83,24 @@ public class TransactionService {
         //3. number of books issued against the card is strictly less than max_allowed_books
         // If it fails: throw new Exception("Book limit has reached for this card");
         //If the transaction is successful, save the transaction to the list of transactions and return the id
-
         //Note that the error message should match exactly in all cases
 
-       return null; //return transactionId instead
+       return transaction.getTransactionId(); //return transactionId instead
     }
 
     public Transaction returnBook(int cardId, int bookId) throws Exception{
 
-        List<Transaction> transactions = transactionRepository5.find(cardId, bookId, TransactionStatus.SUCCESSFUL, true);
+        List<Transaction> transactions = transactionRepository5.find(cardId, bookId, SUCCESSFUL, true);
         Transaction transaction = transactions.get(transactions.size() - 1);
+
+        Card card=cardRepository5.findById(cardId).get();
+        List<Book> books=card.getBooks();
+        for(Book book:books){
+            book.setAvailable(true);
+            bookRepository5.save(book);
+        }
+        card.setBooks(null);
+        cardRepository5.save(card);
 
         //for the given transaction calculate the fine amount considering the book has been returned exactly when this function is called
         //make the book available for other users
