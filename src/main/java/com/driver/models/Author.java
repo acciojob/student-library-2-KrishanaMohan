@@ -23,6 +23,9 @@ public class Author {
     @JsonIgnoreProperties("author")
     private List<Book> booksWritten;
 
+    public Author() {
+    }
+
     public int getId() {
         return id;
     }
@@ -47,8 +50,31 @@ public class Author {
         return booksWritten;
     }
 
-    public Author() {
+    public void setId(int id) {
+        this.id = id;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setBooksWritten(List<Book> booksWritten) {
+        this.booksWritten = booksWritten;
+    }
+
+
 
 }
 
