@@ -71,7 +71,6 @@ public class TransactionService {
         List<Book>list=card.getBooks();
         list.add(book);
         card.setBooks(list);
-
         transactionRepository5.save(transaction);
         cardRepository5.save(card);
         bookRepository5.save(book);
