@@ -8,19 +8,20 @@ import org.springframework.web.bind.annotation.*;
 
 //Add required annotations
 @RestController
+@RequestMapping("/transaction")
 public class TransactionController {
 
     //Add required annotations
     @Autowired
     TransactionService transactionService;
-    @PostMapping("/transaction")
+    @PostMapping("/")
     public ResponseEntity issueBook(@RequestParam("cardId") int cardId, @RequestParam("bookId") int bookId) throws Exception{
            transactionService.issueBook(cardId,bookId);
        return new ResponseEntity<>("transaction completed", HttpStatus.ACCEPTED);
     }
 
     //Add required annotations
-    @PostMapping("/transaction")
+    @PostMapping("/")
     public ResponseEntity returnBook(@RequestParam("cardId") int cardId, @RequestParam("bookId") int bookId) throws Exception{
 
         return new ResponseEntity<>("transaction completed", HttpStatus.ACCEPTED);

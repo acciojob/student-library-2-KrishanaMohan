@@ -21,8 +21,6 @@ public class Student {
 
     private String country;
 
-    public Student() {
-    }
 
     // alter table student add foreign key constraint card references Card(id)
 
@@ -51,7 +49,14 @@ public class Student {
                 '}';
     }
 
-
+    public Student(String email, String name, int age, String country) {
+        this.emailId = email;
+        this.name = name;
+        this.age = age;
+        this.country = country;
+    }
+    public Student(){
+    }
     public int getId() {
         return id;
     }

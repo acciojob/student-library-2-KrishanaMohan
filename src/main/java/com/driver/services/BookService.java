@@ -22,13 +22,18 @@ public class BookService {
         bookRepository2.save(book);
     }
 
-    public List<Book> getBooks(String genre, boolean available, String author){
-        List<Book> books = null;
-        //find the elements of the list by yourself
-        List<Book>allbooks1=bookRepository2.findBooksByGenreAuthor(genre,null,true);
-        List<Book>allbooks2=bookRepository2.findBooksByGenreAuthor(genre,author,false);
+    public List<Book> getBooks(String genre, boolean available, String author) {
 
-        allbooks1.addAll(allbooks2);
-        return allbooks1;
+        //find the elements of the list by yourself
+        if (genre != null && author != null) {
+            List<Book> books = bookRepository2.findBooksByGenreAuthor(genre, author, available);
+            return books;
+        } else if (genre != null) {
+            return bookRepository2.findBooksByGenre(genre, available);
+        } else if (author != null) {
+            return bookRepository2.findBooksByAuthor(author, available);
+        }
+        return bookRepository2.findByAvailability(available);
+
     }
 }

@@ -38,7 +38,12 @@ public class Book {
 
     public Book() {
     }
-
+    public Book(String name, Genre genre, Author author) {
+        this.name = name;
+        this.genre = genre;
+        this.author = author;
+        this.available = true;
+    }
     public int getId() {
         return id;
     }
